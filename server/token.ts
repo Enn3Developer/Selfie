@@ -88,9 +88,12 @@ export function insertToken(token: string, userId: string, special?: boolean): b
 // @params token: the token to check for the user id
 // @returns the user id if the token was found, `undefined` otherwise
 export function getUserId(token: string): string | undefined {
+  // check if the token map has the token
   if (!tokenMap.has(token)) {
+    // if not, return immediately
     return undefined;
   }
 
+  // return the user id found from the token
   return tokenMap.get(token)![2];
 }
