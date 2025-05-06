@@ -2,7 +2,7 @@ import {v4 as uuidv4} from 'uuid';
 
 // TODO: missing implementation to ser/de the token map
 
-let tokenMap: Map<string, [start: number, hours: number]> = new Map();
+let tokenMap: Map<string, [start: number, hours: number, userId: string]> = new Map();
 
 // Generates a new random token
 export function generateToken(): string {
@@ -19,7 +19,7 @@ export function checkToken(token: string): boolean {
   if (!tokenMap.has(token)) return false;
 
   // get the validity values for the token
-  let [startValidity, hours] = tokenMap.get(token)!;
+  let [startValidity, hours, _] = tokenMap.get(token)!;
 
   // compute the end of the validity of the token in milliseconds
   let maxValidity = startValidity + hours * 60 * 60 * 1000;
@@ -59,9 +59,10 @@ export function cleanUpTokens() {
 // Tries to save the token
 //
 // @params token: the token to save
+// @params userId: the user id associated with this token
 // @params special: optional parameter indicating whether the token should have a longer validity
 // @returns true if the operation was successful, false otherwise
-export function insertToken(token: string, special?: boolean): boolean {
+export function insertToken(token: string, userId: string, special?: boolean): boolean {
   // check if the token map doesn't have the token already
   if (tokenMap.has(token)) {
     // if it does, return false
@@ -77,7 +78,19 @@ export function insertToken(token: string, special?: boolean): boolean {
   let start = Date.now();
 
   // update the token map
-  tokenMap.set(token, [start, hours]);
+  tokenMap.set(token, [start, hours, userId]);
 
   return true;
+}
+
+// Returns the user id associated with a token
+//
+// @params token: the token to check for the user id
+// @returns the user id if the token was found, `undefined` otherwise
+export function getUserId(token: string): string | undefined {
+  if (!tokenMap.has(token)) {
+    return undefined;
+  }
+
+  return tokenMap.get(token)![2];
 }
