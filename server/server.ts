@@ -1,13 +1,14 @@
-import express = require("express");
-import cors = require("cors");
-import {setupRoutes} from "./routes/routes";
-import {cleanUpTokens} from "./token";
+import express from "express";
+import cors from "cors";
+import {setupRoutes} from "./routes/routes.ts";
+import {cleanUpTokens} from "./token.ts";
 
 const app = express();
 // 5 minutes
 const CLEANUP_TIME = 5 * 60 * 1000;
 
 app.use(cors());
+app.use(express.json());
 
 setupRoutes(app);
 
