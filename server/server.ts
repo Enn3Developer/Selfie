@@ -11,7 +11,6 @@ const CLEANUP_TIME = 5 * 60 * 1000;
 
 connectToDb().catch(console.dir);
 
-
 app.use(cors());
 app.use(express.json());
 
