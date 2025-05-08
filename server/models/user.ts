@@ -1,15 +1,23 @@
-class User {
-  private readonly _id: string;
+import {ObjectId} from "mongoose";
+
+export class User {
+  readonly _id?: ObjectId | undefined;
   private readonly _handle: string;
+  private _email: string;
+  private _password: string;
   private _displayName: string;
 
-  constructor(id: string, handle: string, displayName: string) {
+  static CollectionName = "users";
+
+  constructor(handle: string, displayName: string, email: string, password: string, id?: ObjectId | undefined) {
     this._id = id;
     this._handle = handle;
     this._displayName = displayName;
+    this._email = email;
+    this._password = password;
   }
 
-  get id(): string {
+  get id(): ObjectId | undefined {
     return this._id;
   }
 
@@ -24,6 +32,20 @@ class User {
   set displayName(value: string) {
     this._displayName = value;
   }
-}
 
-export {User}
+  get email(): string {
+    return this._email;
+  }
+
+  set email(value: string) {
+    this._email = value;
+  }
+
+  get password(): string {
+    return this._password;
+  }
+
+  set password(value: string) {
+    this._password = value;
+  }
+}

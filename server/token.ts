@@ -1,8 +1,9 @@
 import {v4 as uuidv4} from 'uuid';
+import {ObjectId} from "mongoose";
 
 // TODO: missing implementation to ser/de the token map
 
-let tokenMap: Map<string, [start: number, hours: number, userId: string]> = new Map();
+let tokenMap: Map<string, [start: number, hours: number, userId: ObjectId]> = new Map();
 
 // Generates a new random token
 export function generateToken(): string {
@@ -62,7 +63,7 @@ export function cleanUpTokens() {
 // @params userId: the user id associated with this token
 // @params special: optional parameter indicating whether the token should have a longer validity
 // @returns true if the operation was successful, false otherwise
-export function insertToken(token: string, userId: string, special?: boolean): boolean {
+export function insertToken(token: string, userId: ObjectId, special?: boolean): boolean {
   // check if the token map doesn't have the token already
   if (tokenMap.has(token)) {
     // if it does, return false
@@ -86,12 +87,12 @@ export function insertToken(token: string, userId: string, special?: boolean): b
 // Returns the user id associated with a token
 //
 // @params token: the token to check for the user id
-// @returns the user id if the token was found, `undefined` otherwise
-export function getUserId(token: string): string | undefined {
+// @returns the user id if the token was found, `null` otherwise
+export function getUserId(token: string): ObjectId | null {
   // check if the token map has the token
   if (!tokenMap.has(token)) {
     // if not, return immediately
-    return undefined;
+    return null;
   }
 
   // return the user id found from the token
