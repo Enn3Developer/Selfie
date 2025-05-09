@@ -11,14 +11,15 @@ interface RegisterParameters {
   password: string,
   handle: string,
   displayName: string,
-  rememberMe?: boolean,
+  rememberMe?: boolean | undefined,
 }
 
 router.post("/", async (req, res) => {
   let params = req.body as RegisterParameters;
+  console.log("received request for registration");
 
   try {
-    let query = {email: params.email};
+    let query = {_email: params.email};
     let queryResult = (await collections.users!.findOne(query));
     if (queryResult != null) {
       res.status(200).send("EMAIL_FOUND");
@@ -36,11 +37,11 @@ router.post("/", async (req, res) => {
     }
 
     let token = generateToken();
-    if (!insertToken(token, user.id!, params.rememberMe)) {
+    if (!insertToken(token, user._id!, params.rememberMe)) {
       console.error("special error occurred");
     }
     res.status(201).send({token: token});
   } catch (error) {
-
+    console.error(`error during registration: ${error}`)
   }
 });

@@ -63,7 +63,7 @@ export function cleanUpTokens() {
 // @params userId: the user id associated with this token
 // @params special: optional parameter indicating whether the token should have a longer validity
 // @returns true if the operation was successful, false otherwise
-export function insertToken(token: string, userId: ObjectId, special?: boolean): boolean {
+export function insertToken(token: string, userId: ObjectId, special?: boolean | undefined): boolean {
   // check if the token map doesn't have the token already
   if (tokenMap.has(token)) {
     // if it does, return false

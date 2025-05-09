@@ -7,7 +7,10 @@ const uri = `mongodb+srv://arturpeshko39:${process.env.PASSWORD}@cluster0.kzp8ls
 export async function connectToDb() {
   try {
     // Create a Mongoose client with a MongoClientOptions object to set the Stable API version
-    let client = await mongoose.connect(uri, {serverApi: {version: "1", strict: true, deprecationErrors: true}});
+    let client = await mongoose.connect(uri, {
+      serverApi: {version: "1", strict: true, deprecationErrors: true},
+      dbName: "Selfie"
+    });
     if (!mongoose.connection.db) {
       console.error("no connection to the database");
       return;
@@ -16,8 +19,9 @@ export async function connectToDb() {
     console.log("Successfully connected to DB");
     // @ts-ignore
     collections.users = mongoose.connection.db.collection(User.CollectionName);
-  } finally {
-    // Ensures that the client will close when you finish/error
+  } catch (error) {
+    console.error(`error happened during database connection: ${error}`);
+    // Ensures that the client will close when you error
     await mongoose.disconnect();
   }
 }
