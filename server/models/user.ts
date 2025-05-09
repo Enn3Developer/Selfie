@@ -1,6 +1,6 @@
 import {ObjectId} from "mongoose";
 
-export class User {
+export default class User {
   _id?: ObjectId | undefined;
   _handle: string;
   _email: string;

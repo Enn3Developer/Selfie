@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
-import {User} from "../models/user.ts";
+import User from "../models/user.ts";
+import Event from "../models/event.ts";
 
-export const collections: { users?: mongoose.Collection } = {};
+export const collections: { users?: mongoose.Collection, events?: mongoose.Collection } = {};
 const uri = `mongodb+srv://arturpeshko39:${process.env.PASSWORD}@cluster0.kzp8lsd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 export async function connectToDb() {
@@ -19,6 +20,8 @@ export async function connectToDb() {
     console.log("Successfully connected to DB");
     // @ts-ignore
     collections.users = mongoose.connection.db.collection(User.CollectionName);
+    // @ts-ignore
+    collections.events = mongoose.connection.db.collection(Event.CollectionName);
   } catch (error) {
     console.error(`error happened during database connection: ${error}`);
     // Ensures that the client will close when you error
