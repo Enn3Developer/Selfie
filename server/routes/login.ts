@@ -1,6 +1,6 @@
 import express from "express";
 import {collections} from "../services/database.service.ts";
-import {User} from "../models/user.ts";
+import User from "../models/user.ts";
 import {generateToken, insertToken} from "../token.ts";
 import bcrypt from "bcrypt";
 
