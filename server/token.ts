@@ -1,7 +1,7 @@
 import {v4 as uuidv4} from 'uuid';
 import {ObjectId} from "mongoose";
-
-// TODO: missing implementation to ser/de the token map
+import * as asyncFs from "node:fs/promises";
+import * as fs from "node:fs";
 
 let tokenMap: Map<string, [start: number, hours: number, userId: ObjectId]> = new Map();
 
@@ -70,6 +70,9 @@ export function insertToken(token: string, userId: ObjectId, special?: boolean |
     return false;
   }
 
+  // TEMPORARY
+  special = special || true;
+
   // compute the number of hours of validity
   // if the token is special, the number should be equivalent to 30 days
   // else it should be only 30 minutes
@@ -97,4 +100,19 @@ export function getUserId(token: string): ObjectId | null {
 
   // return the user id found from the token
   return tokenMap.get(token)![2];
+}
+
+// These ser/de functions may be temporary
+export async function serialize() {
+  let json = JSON.stringify(tokenMap);
+  await asyncFs.writeFile("tokens", json);
+}
+
+export async function deserialize() {
+  if (!fs.existsSync("token")) {
+    return;
+  }
+
+  let content: string = await asyncFs.readFile("token", {encoding: "utf8"});
+  tokenMap = JSON.parse(content);
 }
