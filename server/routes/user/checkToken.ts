@@ -10,6 +10,5 @@ interface CheckTokenParameters {
 router.post("/check", (req, res) => {
   let params = req.body as CheckTokenParameters;
   let isValid = checkToken(params.token);
-  console.log(isValid);
   res.status(isValid ? 200 : 401).send("OK");
 });
