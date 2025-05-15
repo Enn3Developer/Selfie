@@ -21,7 +21,7 @@ router.post("/create", async (req, res) => {
 
   let userId = getUserId(params.token);
   if (userId === null) {
-    res.status(401);
+    res.status(401).send("NO_AUTH");
     return;
   }
 
@@ -34,9 +34,9 @@ router.post("/create", async (req, res) => {
       throw "NO_ACK";
     }
 
-    res.status(201);
+    res.status(201).send("OK");
   } catch (error) {
-    res.status(500);
+    res.status(500).send("ERR");
     console.error(error);
   }
 });
@@ -46,7 +46,7 @@ router.post("/get", async (req, res) => {
 
   let userId = getUserId(params.token);
   if (userId === null) {
-    res.status(401);
+    res.status(401).send("NO_AUTH");
     return;
   }
 
@@ -61,13 +61,13 @@ router.post("/get", async (req, res) => {
     }
 
     if (sendingNotes.length === 0) {
-      res.status(404);
+      res.status(404).send("NOT_FOUND");
       return;
     }
 
     res.status(200).send(sendingNotes);
   } catch (error) {
-    res.status(500);
+    res.status(500).send("ERR");
     console.error(error);
   }
 });
@@ -77,7 +77,7 @@ router.post("/get/:note_id", async (req, res) => {
 
   let userId = getUserId(params.token);
   if (userId === null) {
-    res.status(401);
+    res.status(401).send("NO_AUTH");
     return;
   }
 
@@ -86,13 +86,13 @@ router.post("/get/:note_id", async (req, res) => {
   try {
     let note = await collections.notes!.findOne(query);
     if (note === null) {
-      res.status(404);
+      res.status(404).send("NOT_FOUND");
       return;
     }
 
     res.status(200).send(note);
   } catch (error) {
-    res.status(500);
+    res.status(500).send("ERR");
     console.error(error);
   }
 });
@@ -102,7 +102,7 @@ router.post("/get/latest", async (req, res) => {
 
   let userId = getUserId(params.token);
   if (userId === null) {
-    res.status(401);
+    res.status(401).send("NO_AUTH");
     return;
   }
 
@@ -111,13 +111,13 @@ router.post("/get/latest", async (req, res) => {
   try {
     let note = await collections.notes!.find(query).sort({_createdAt: -1}).limit(1).next();
     if (note === null) {
-      res.status(404);
+      res.status(404).send("NOT_FOUND");
       return;
     }
 
     res.status(200).send(note);
   } catch (error) {
-    res.status(500);
+    res.status(500).send("ERR");
     console.error(error);
   }
 });
@@ -127,7 +127,7 @@ router.post("/modify/:note_id", async (req, res) => {
 
   let userId = getUserId(params.token);
   if (userId === null) {
-    res.status(401);
+    res.status(401).send("NO_AUTH");
     return;
   }
 
@@ -136,7 +136,7 @@ router.post("/modify/:note_id", async (req, res) => {
   try {
     let note = await collections.notes!.findOne(query);
     if (note === null) {
-      res.status(404);
+      res.status(404).send("NOT_FOUND");
       return;
     }
 
@@ -145,9 +145,9 @@ router.post("/modify/:note_id", async (req, res) => {
 
     await note.save();
 
-    res.status(201);
+    res.status(201).send("OK");
   } catch (error) {
-    res.status(500);
+    res.status(500).send("ERR");
     console.error(error);
   }
 });
@@ -157,7 +157,7 @@ router.post("/delete/:note_id", async (req, res) => {
 
   let userId = getUserId(params.token);
   if (userId === null) {
-    res.status(401);
+    res.status(401).send("NO_AUTH");
     return;
   }
 
@@ -169,9 +169,9 @@ router.post("/delete/:note_id", async (req, res) => {
       throw "NO_ACK";
     }
 
-    res.status(200);
+    res.status(200).send("OK");
   } catch (error) {
-    res.status(500);
+    res.status(500).send("ERR");
     console.error(error);
   }
 });
