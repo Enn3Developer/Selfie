@@ -72,31 +72,6 @@ router.post("/get", async (req, res) => {
   }
 });
 
-router.post("/get/:note_id", async (req, res) => {
-  let params = req.body as NotesParams;
-
-  let userId = getUserId(params.token);
-  if (userId === null) {
-    res.status(401).send("NO_AUTH");
-    return;
-  }
-
-  let query = {_id: new ObjectId(req.params.note_id), _userId: userId};
-
-  try {
-    let note = await collections.notes!.findOne(query);
-    if (note === null) {
-      res.status(404).send("NOT_FOUND");
-      return;
-    }
-
-    res.status(200).send(note);
-  } catch (error) {
-    res.status(500).send("ERR");
-    console.error(error);
-  }
-});
-
 router.post("/get/latest", async (req, res) => {
   let params = req.body as NotesParams;
 
@@ -110,6 +85,31 @@ router.post("/get/latest", async (req, res) => {
 
   try {
     let note = await collections.notes!.find(query).sort({_createdAt: -1}).limit(1).next();
+    if (note === null) {
+      res.status(404).send("NOT_FOUND");
+      return;
+    }
+
+    res.status(200).send(note);
+  } catch (error) {
+    res.status(500).send("ERR");
+    console.error(error);
+  }
+});
+
+router.post("/get/:note_id", async (req, res) => {
+  let params = req.body as NotesParams;
+
+  let userId = getUserId(params.token);
+  if (userId === null) {
+    res.status(401).send("NO_AUTH");
+    return;
+  }
+
+  let query = {_id: new ObjectId(req.params.note_id), _userId: userId};
+
+  try {
+    let note = await collections.notes!.findOne(query);
     if (note === null) {
       res.status(404).send("NOT_FOUND");
       return;
