@@ -145,7 +145,7 @@ router.post("/modify/:note_id", async (req, res) => {
 
     await note.save();
 
-    res.status(201).send("OK");
+    res.status(200).send("OK");
   } catch (error) {
     res.status(500).send("ERR");
     console.error(error);
