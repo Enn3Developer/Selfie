@@ -84,7 +84,7 @@ router.post("/get/latest", async (req, res) => {
   let query = {_userId: userId};
 
   try {
-    let note = await collections.notes!.find(query).sort({_createdAt: -1}).limit(1).next();
+    let note = await collections.notes!.find(query).sort({_created_at: -1}).limit(1).next();
     if (note === null) {
       res.status(404).send("NOT_FOUND");
       return;
@@ -140,10 +140,10 @@ router.post("/modify/:note_id", async (req, res) => {
       return;
     }
 
-    note.title = params.title;
-    note.content = params.content;
+    note._title = params.title;
+    note._content = params.content;
 
-    await note.save();
+    await collections.notes!.replaceOne(query, note);
 
     res.status(200).send("OK");
   } catch (error) {
