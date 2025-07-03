@@ -3,13 +3,13 @@ import {ObjectId} from "mongoose";
 export default class Note {
   _title: string;
   _content: string;
-  _id?: ObjectId | undefined;
+  _id?: string;
   _created_at: Date;
-  _userId: ObjectId;
+  _userId: string;
 
   static CollectionName = "notes";
 
-  constructor(title: string, content: string, userId: ObjectId, id?: ObjectId | undefined) {
+  constructor(title: string, content: string, userId: string, id?: string) {
     this._title = title;
     this._content = content;
     this._userId = userId;

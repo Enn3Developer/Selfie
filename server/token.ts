@@ -1,9 +1,9 @@
 import {v4 as uuidv4} from 'uuid';
-import {ObjectId} from "mongoose";
 import * as asyncFs from "node:fs/promises";
 import * as fs from "node:fs";
+import {ObjectId} from 'mongodb';
 
-let tokenMap: Map<string, [start: number, hours: number, userId: ObjectId]> = new Map();
+let tokenMap: Map<string, [start: number, hours: number, userId: string]> = new Map();
 
 // Generates a new random token
 export function generateToken(): string {
@@ -63,7 +63,7 @@ export function cleanUpTokens() {
 // @params userId: the user id associated with this token
 // @params special: optional parameter indicating whether the token should have a longer validity
 // @returns true if the operation was successful, false otherwise
-export function insertToken(token: string, userId: ObjectId, special?: boolean | undefined): boolean {
+export function insertToken(token: string, userId: string, special?: boolean, start?: number, hours?: number): boolean {
   // check if the token map doesn't have the token already
   if (tokenMap.has(token)) {
     // if it does, return false
@@ -76,10 +76,10 @@ export function insertToken(token: string, userId: ObjectId, special?: boolean |
   // compute the number of hours of validity
   // if the token is special, the number should be equivalent to 30 days
   // else it should be only 30 minutes
-  let hours = special ? 30 * 24 : 0.5;
+  hours = hours || special ? 30 * 24 : 0.5;
 
   // get the current time
-  let start = Date.now();
+  start = start || Date.now();
 
   // update the token map
   tokenMap.set(token, [start, hours, userId]);
@@ -99,20 +99,24 @@ export function getUserId(token: string): ObjectId | null {
   }
 
   // return the user id found from the token
-  return tokenMap.get(token)![2];
+  return new ObjectId(tokenMap.get(token)![2]);
 }
 
 // These ser/de functions may be temporary
 export async function serialize() {
-  let json = JSON.stringify(tokenMap);
-  await asyncFs.writeFile("tokens", json);
+  let json = JSON.stringify(Object.fromEntries(tokenMap));
+  await asyncFs.writeFile("tokens", json, "utf-8");
 }
 
 export async function deserialize() {
-  if (!fs.existsSync("token")) {
+  if (!fs.existsSync("tokens")) {
     return;
   }
 
-  let content: string = await asyncFs.readFile("token", {encoding: "utf8"});
-  tokenMap = JSON.parse(content);
+  let content: string = await asyncFs.readFile("tokens", "utf-8");
+  let entries = Object.entries(JSON.parse(content));
+  for (const entry of entries) {
+    // @ts-ignore
+    insertToken(entry[0], entry[1][2], true, entry[1][0], entry[1][1]);
+  }
 }

@@ -37,7 +37,7 @@ router.post("/", async (req, res) => {
     }
 
     let token = generateToken();
-    if (!insertToken(token, user._id!, params.rememberMe)) {
+    if (!insertToken(token, user._id!.toString(), params.rememberMe)) {
       console.error("special error occurred");
     }
     res.status(201).send({token: token});

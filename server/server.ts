@@ -6,7 +6,7 @@ import {connectToDb} from "./services/database.service.ts";
 
 const app = express();
 // 5 minutes
-const CLEANUP_TIME = 5 * 60 * 1000;
+const CLEANUP_TIME = 15 * 1000;
 
 connectToDb().catch(console.dir);
 

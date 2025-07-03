@@ -26,7 +26,7 @@ router.post("/", async (req, res) => {
         throw "WRONG_PASS";
       }
       let token = generateToken();
-      if (!insertToken(token, user._id!, params.rememberMe)) {
+      if (!insertToken(token, user._id!.toString(), params.rememberMe)) {
         console.error("special error occurred");
       }
       res.status(200).send({token: token});
