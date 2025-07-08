@@ -17,13 +17,15 @@ type CreateEventsParam = EventsParam & {
   description: string,
 }
 
-type GetEventsParam = EventsParam & {
+interface GetEventsParam {
+  token: string,
   start: number,
   end: number,
 }
 
 router.post("/create", async (req, res) => {
-  let params = req.params as CreateEventsParam;
+  let params = req.body as CreateEventsParam;
+  console.log(params);
 
   let userId = getUserId(params.token);
   if (userId === null) {
@@ -48,7 +50,7 @@ router.post("/create", async (req, res) => {
 });
 
 router.post("/get", async (req, res) => {
-  let params = req.params as GetEventsParam;
+  let params = req.body as GetEventsParam;
 
   let userId = getUserId(params.token);
   if (userId === null) {
@@ -57,7 +59,7 @@ router.post("/get", async (req, res) => {
   }
 
   try {
-    let query = {_start: {$gte: params.start}, _end: {$lte: params.end}};
+    let query = {_userId: userId};
 
     let sendingEvents = [];
     let events = collections.events!.find(query);
