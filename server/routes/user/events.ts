@@ -16,12 +16,34 @@ interface CreateEventsParam {
   end: number,
   name: string,
   description: string,
+  repeat: boolean,
+  frequency?: string,
+  repetitions?: number,
 }
 
 interface GetEventsParam {
   token: string,
   start: number,
   end: number,
+}
+
+function increaseByOffset(date: Date, offset: string): Date {
+  switch (offset) {
+    case "day":
+      return new Date(date.getTime() + 24 * 60 * 60 * 1000);
+    case "week":
+      return new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000);
+    case "month":
+      let newDate = new Date(date.getTime());
+      newDate.setMonth(date.getMonth() + 1);
+      return newDate;
+    case "year":
+      let newDateYear = new Date(date.getTime());
+      newDateYear.setFullYear(date.getFullYear() + 1);
+      return newDateYear;
+  }
+
+  return date;
 }
 
 router.post("/create", async (req, res) => {
@@ -35,7 +57,7 @@ router.post("/create", async (req, res) => {
   }
 
   try {
-    let event = new Event(params.start, params.end, params.name, params.description, userId);
+    let event = new Event(params.start, params.end, params.name, params.description, userId, params.repeat, params.frequency ?? "", params.repetitions ?? 0);
 
     // @ts-ignore
     let result = await collections.events!.insertOne(event);
@@ -52,7 +74,7 @@ router.post("/create", async (req, res) => {
 
 router.post("/get", async (req, res) => {
   let params = req.body as GetEventsParam;
-  
+
   let userId = getUserId(params.token);
   if (userId === null) {
     res.status(401).send("NO_AUTH");
@@ -66,6 +88,27 @@ router.post("/get", async (req, res) => {
     let events = collections.events!.find(query);
 
     for await (let event of events) {
+      if (event._repeat) {
+        let repetitions = event._repetitions;
+        let startDate = new Date(event._start);
+        let endDate = new Date(event._end);
+
+        while (repetitions > 0 || repetitions == -1) {
+          startDate = increaseByOffset(startDate, event._frequency);
+          endDate = increaseByOffset(endDate, event._frequency);
+          if (event._start > params.end) break;
+          if (event._end < params.start) {
+            if (repetitions != -1) repetitions -= 1;
+            continue;
+          }
+
+          sendingEvents.push(event);
+          if (repetitions != -1) repetitions -= 1;
+        }
+
+        continue;
+      }
+
       if (event._end < params.start) continue;
       if (event._start > params.end) continue;
       sendingEvents.push(event);
