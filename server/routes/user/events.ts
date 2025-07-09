@@ -10,7 +10,8 @@ type EventsParam = {
   token: string,
 }
 
-type CreateEventsParam = EventsParam & {
+interface CreateEventsParam {
+  token: string,
   start: number,
   end: number,
   name: string,
@@ -51,7 +52,7 @@ router.post("/create", async (req, res) => {
 
 router.post("/get", async (req, res) => {
   let params = req.body as GetEventsParam;
-
+  
   let userId = getUserId(params.token);
   if (userId === null) {
     res.status(401).send("NO_AUTH");
@@ -65,8 +66,8 @@ router.post("/get", async (req, res) => {
     let events = collections.events!.find(query);
 
     for await (let event of events) {
-      if (event._start < params.start) continue;
-      if (event._end > params.end) continue;
+      if (event._end < params.start) continue;
+      if (event._start > params.end) continue;
       sendingEvents.push(event);
     }
 
