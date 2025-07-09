@@ -65,6 +65,8 @@ router.post("/get", async (req, res) => {
     let events = collections.events!.find(query);
 
     for await (let event of events) {
+      if (event._start < params.start) continue;
+      if (event._end > params.end) continue;
       sendingEvents.push(event);
     }
 
