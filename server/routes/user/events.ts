@@ -16,6 +16,7 @@ interface CreateEventsParam {
   end: number,
   name: string,
   description: string,
+  place?: string,
   repeat: boolean,
   frequency?: string,
   repetitions?: number,
@@ -57,7 +58,7 @@ router.post("/create", async (req, res) => {
   }
 
   try {
-    let event = new Event(params.start, params.end, params.name, params.description, userId, params.repeat, params.frequency ?? "", params.repetitions ?? 0);
+    let event = new Event(params.start, params.end, params.name, params.description, userId, params.repeat, params.frequency ?? "", params.repetitions ?? 0, params.place);
 
     // @ts-ignore
     let result = await collections.events!.insertOne(event);
@@ -181,6 +182,7 @@ router.post("/modify/:event_id", async (req, res) => {
     event._repeat = params.repeat;
     event._frequency = params.frequency;
     event._repetitions = params.repetitions;
+    event._place = params.place;
 
     await collections.events!.replaceOne(query, event);
 

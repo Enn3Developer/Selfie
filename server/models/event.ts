@@ -7,6 +7,7 @@ export default class Event {
   _end: number;
   _name: string;
   _description: string;
+  _place?: string;
   _userId: ObjectId;
   _id?: string;
   _repeat: boolean;
@@ -15,7 +16,7 @@ export default class Event {
 
   static CollectionName = "events";
 
-  constructor(start: number, end: number, name: string, description: string, userId: ObjectId, repeat: boolean, frequency: string, repetitions: number, id?: string) {
+  constructor(start: number, end: number, name: string, description: string, userId: ObjectId, repeat: boolean, frequency: string, repetitions: number, place?: string, id?: string) {
     this._start = start;
     this._end = end;
     this._name = name;
@@ -24,6 +25,7 @@ export default class Event {
     this._repeat = repeat;
     this._frequency = frequency;
     this._repetitions = repetitions;
+    this._place = place;
     this._id = id;
   }
 }
