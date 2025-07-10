@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
-import {setupRoutes} from "./routes/routes.ts";
-import {cleanUpTokens, deserialize, serialize} from "./token.ts";
-import {connectToDb} from "./services/database.service.ts";
+import {setupRoutes} from "./routes/routes";
+import {cleanUpTokens, deserialize, serialize} from "./token";
+import {connectToDb} from "./services/database.service";
 
 const app = express();
 // 5 minutes

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import User from "../models/user.ts";
-import Event from "../models/event.ts";
-import Note from "../models/note.ts";
+import User from "../models/user";
+import Event from "../models/event";
+import Note from "../models/note";
 
 export const collections: {
   users?: mongoose.Collection,

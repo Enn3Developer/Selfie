@@ -1,7 +1,7 @@
 import express from "express";
-import {router as notes} from "./notes.ts";
-import {router as events} from "./events.ts";
-import {router as token} from "./checkToken.ts";
+import {router as notes} from "./notes";
+import {router as events} from "./events";
+import {router as token} from "./checkToken";
 
 export const router = express.Router({mergeParams: true});
 

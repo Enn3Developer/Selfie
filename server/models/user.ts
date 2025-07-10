@@ -1,5 +1,3 @@
-import {ObjectId} from "mongoose";
-
 export default class User {
   _id?: string;
   _handle: string;

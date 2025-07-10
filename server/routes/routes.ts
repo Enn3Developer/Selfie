@@ -1,7 +1,7 @@
 import e from "express";
-import {router as login} from "./login.ts";
-import {router as register} from "./register.ts";
-import {router as user} from "./user/user.ts";
+import {router as login} from "./login";
+import {router as register} from "./register";
+import {router as user} from "./user/user";
 
 export function setupRoutes(app: e.Express) {
   app.use("/login", login);

@@ -1,5 +1,5 @@
 import express from "express";
-import {checkToken} from "../../token.ts";
+import {checkToken} from "../../token";
 
 export const router = express.Router({mergeParams: true});
 
