@@ -27,9 +27,7 @@ interface GetEventsParam {
   end: number,
 }
 
-function increaseByOffset(date: Date, offset: string, increase: boolean): Date {
-  if (!increase) return date;
-
+function increaseByOffset(date: Date, offset: string): Date {
   switch (offset) {
     case "day":
       return new Date(date.getTime() + 24 * 60 * 60 * 1000);
@@ -94,13 +92,10 @@ router.post("/get", async (req, res) => {
         let repetitions = event._repetitions;
         let startDate = new Date(event._start);
         let endDate = new Date(event._end);
-        let increase = false;
 
         while (repetitions > 0 || repetitions == -1) {
-          startDate = increaseByOffset(startDate, event._frequency, increase);
-          endDate = increaseByOffset(endDate, event._frequency, increase);
-
-          if (!increase) increase = true;
+          startDate = increaseByOffset(startDate, event._frequency);
+          endDate = increaseByOffset(endDate, event._frequency);
 
           if (startDate.getTime() > params.end) break;
           if (endDate.getTime() < params.start) {
@@ -117,8 +112,6 @@ router.post("/get", async (req, res) => {
           );
           if (repetitions != -1) repetitions -= 1;
         }
-
-        continue;
       }
 
       if (event._end < params.start) continue;
@@ -185,6 +178,9 @@ router.post("/modify/:event_id", async (req, res) => {
     event._end = params.end;
     event._name = params.name;
     event._description = params.description;
+    event._repeat = params.repeat;
+    event._frequency = params.frequency;
+    event._repetitions = params.repetitions;
 
     await collections.events!.replaceOne(query, event);
 
