@@ -5,7 +5,7 @@ import {router as user} from "./user/user.js";
 import express from "express";
 
 export function setupRoutes(app: e.Express) {
-  app.use("/public", express.static("public"));
+  app.use("/", express.static("public"));
 
   app.use("/login", login);
   app.use("/register", register);
