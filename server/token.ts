@@ -104,19 +104,19 @@ export function getUserId(token: string): ObjectId | null {
 
 // These ser/de functions may be temporary
 export async function serialize() {
-  let json = JSON.stringify(Object.fromEntries(tokenMap));
-  await asyncFs.writeFile("tokens", json, "utf-8");
+  // let json = JSON.stringify(Object.fromEntries(tokenMap));
+  // await asyncFs.writeFile("tokens", json, "utf-8");
 }
 
 export async function deserialize() {
-  if (!fs.existsSync("tokens")) {
-    return;
-  }
-
-  let content: string = await asyncFs.readFile("tokens", "utf-8");
-  let entries = Object.entries(JSON.parse(content));
-  for (const entry of entries) {
-    // @ts-ignore
-    insertToken(entry[0], entry[1][2], true, entry[1][0], entry[1][1]);
-  }
+  // if (!fs.existsSync("tokens")) {
+  //   return;
+  // }
+  //
+  // let content: string = await asyncFs.readFile("tokens", "utf-8");
+  // let entries = Object.entries(JSON.parse(content));
+  // for (const entry of entries) {
+  //   // @ts-ignore
+  //   insertToken(entry[0], entry[1][2], true, entry[1][0], entry[1][1]);
+  // }
 }

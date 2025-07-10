@@ -15,7 +15,7 @@ await deserialize();
 app.use(cors());
 app.use(express.json());
 
-setupRoutes(app);
+setupRoutes(app, "/webapp");
 
 setInterval(cleanUpTokens, CLEANUP_TIME);
 setInterval(serialize, CLEANUP_TIME);

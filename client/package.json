@@ -28,7 +28,7 @@
   },
   "scripts": {
     "start": "vite --host --port 3000",
-    "build": "vite build"
+    "build": "vite build --outDir ../server/build/public --emptyOutDir"
   },
   "eslintConfig": {
     "extends": [

@@ -8,7 +8,7 @@ export const collections: {
   events?: mongoose.Collection,
   notes?: mongoose.Collection
 } = {};
-const uri = `mongodb+srv://arturpeshko39:${process.env.PASSWORD}@cluster0.kzp8lsd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+const uri = `mongodb://artur.peshko:YieHeic5@mongo_artur.peshko/?writeConcern=majority`;
 
 export async function connectToDb() {
   try {
