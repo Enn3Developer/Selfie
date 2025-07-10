@@ -27,7 +27,9 @@ interface GetEventsParam {
   end: number,
 }
 
-function increaseByOffset(date: Date, offset: string): Date {
+function increaseByOffset(date: Date, offset: string, increase: boolean): Date {
+  if (!increase) return date;
+
   switch (offset) {
     case "day":
       return new Date(date.getTime() + 24 * 60 * 60 * 1000);
@@ -92,17 +94,27 @@ router.post("/get", async (req, res) => {
         let repetitions = event._repetitions;
         let startDate = new Date(event._start);
         let endDate = new Date(event._end);
+        let increase = false;
 
         while (repetitions > 0 || repetitions == -1) {
-          startDate = increaseByOffset(startDate, event._frequency);
-          endDate = increaseByOffset(endDate, event._frequency);
-          if (event._start > params.end) break;
-          if (event._end < params.start) {
+          startDate = increaseByOffset(startDate, event._frequency, increase);
+          endDate = increaseByOffset(endDate, event._frequency, increase);
+
+          if (!increase) increase = true;
+
+          if (startDate.getTime() > params.end) break;
+          if (endDate.getTime() < params.start) {
             if (repetitions != -1) repetitions -= 1;
             continue;
           }
 
-          sendingEvents.push(event);
+          sendingEvents.push(
+            new Event(
+              startDate.getTime(), endDate.getTime(), event._name,
+              event._description, event._userId, event._repeat,
+              event._frequency, event._repetitions, event._id.toString("hex")
+            )
+          );
           if (repetitions != -1) repetitions -= 1;
         }
 
