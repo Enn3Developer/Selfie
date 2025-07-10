@@ -20,6 +20,6 @@ setupRoutes(app);
 setInterval(cleanUpTokens, CLEANUP_TIME);
 setInterval(serialize, CLEANUP_TIME);
 
-app.listen(8000, () => {
+app.listen(8000, "0.0.0.0", () => {
   console.log("server listening on port 8000");
 });
