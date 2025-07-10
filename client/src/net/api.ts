@@ -3,7 +3,7 @@ import axios, {AxiosError} from "axios";
 const headers = {
   headers: {"Content-Type": "application/json"}
 };
-const server_address = "http://artur.peshko.tw.cs.unibo.it";
+const server_address = "http://192.168.1.6:8000";
 
 export interface Response<T> {
   status: number,

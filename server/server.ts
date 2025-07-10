@@ -21,5 +21,5 @@ setInterval(cleanUpTokens, CLEANUP_TIME);
 setInterval(serialize, CLEANUP_TIME);
 
 app.listen(8000, () => {
-  console.log("server listening on port 8080");
+  console.log("server listening on port 8000");
 });
