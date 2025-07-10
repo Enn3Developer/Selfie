@@ -1,7 +1,7 @@
 import express from "express";
-import {getUserId} from "../../token";
-import Event from "../../models/event";
-import {collections} from "../../services/database.service";
+import {getUserId} from "../../token.js";
+import Event from "../../models/event.js";
+import {collections} from "../../services/database.service.js";
 import {ObjectId} from "mongodb";
 
 export const router = express.Router({mergeParams: true});

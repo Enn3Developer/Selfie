@@ -1,7 +1,7 @@
 import express from "express";
-import {collections} from "../services/database.service";
-import User from "../models/user";
-import {generateToken, insertToken} from "../token";
+import {collections} from "../services/database.service.js";
+import User from "../models/user.js";
+import {generateToken, insertToken} from "../token.js";
 import bcrypt from "bcrypt";
 
 export const router = express.Router({mergeParams: true});

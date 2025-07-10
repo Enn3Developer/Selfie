@@ -1,8 +1,8 @@
 import express from "express";
-import {collections} from "../../services/database.service";
+import {collections} from "../../services/database.service.js";
 import {ObjectId} from "mongodb";
-import {getUserId} from "../../token";
-import Note from "../../models/note";
+import {getUserId} from "../../token.js";
+import Note from "../../models/note.js";
 
 export const router = express.Router({mergeParams: true});
 
