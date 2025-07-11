@@ -62,7 +62,7 @@ export default function Markdown(props: MarkdownProps) {
                          const {className, ...rest} = props;
 
                          // eslint-disable-next-line
-                         return <a className={`${className} link link-primary`} {...rest}/>
+                         return <a className={`${className} link link-accent`} {...rest}/>
                        },
 
                        ul(props) {

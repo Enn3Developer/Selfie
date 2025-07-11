@@ -33,13 +33,13 @@ export default function UserNotes() {
           <option value="length">Content length</option>
         </select>
         <label className="label">
-          <input type="checkbox" className="checkbox" onChange={(_) => {
+          <input type="checkbox" className="checkbox checkbox-accent" onChange={(_) => {
             setReverse(!reverse);
           }}/>
           Reverse
         </label>
         <Link to="/user/notes/edit"
-              className="btn btn-primary btn-soft btn-square inline-flex flex-row items-center justify-center gap-2 lg:w-30">
+              className="btn btn-accent btn-soft btn-square inline-flex flex-row items-center justify-center gap-2 lg:w-30">
           <AddOutlinedIcon/> <p className="hidden lg:flex">New note</p>
         </Link>
       </div>

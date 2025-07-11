@@ -31,15 +31,15 @@ export default function NoteComponent(props: NoteProps) {
             await createNote(props.note!);
             props.setState!(!props.state);
           }}
-                  className="btn btn-primary btn-outline btn-square inline-flex flex-row items-center justify-center gap-2 lg:w-auto p-2">
+                  className="btn btn-accent btn-outline btn-square inline-flex flex-row items-center justify-center gap-2 lg:w-auto p-2">
             <ContentCopyRoundedIcon/> <p className="hidden lg:flex">Duplicate</p>
           </button>
           <Link to={`/user/notes/edit/${props.note._id}`}
-                className="btn btn-primary btn-outline btn-square inline-flex flex-row items-center justify-center gap-2 lg:w-auto p-2">
+                className="btn btn-accent btn-outline btn-square inline-flex flex-row items-center justify-center gap-2 lg:w-auto p-2">
             <EditRoundedIcon/> <p className="hidden lg:flex">Edit</p>
           </Link>
           <Link to={`/user/notes/${props.note._id}`}
-                className="btn btn-primary btn-outline btn-square inline-flex flex-row items-center justify-center gap-2 lg:w-auto p-2">
+                className="btn btn-accent btn-outline btn-square inline-flex flex-row items-center justify-center gap-2 lg:w-auto p-2">
             <OpenInFullRoundedIcon/><p className="hidden lg:flex">Open</p>
           </Link>
         </div> : null}

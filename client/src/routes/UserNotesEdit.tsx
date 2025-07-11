@@ -30,8 +30,9 @@ export default function UserNotesEdit() {
   return (
     <>
       <div className="flex flex-col gap-4 p-2">
-        <button className="btn btn-sm w-8" onClick={async () => await onDone(id, titleRef, contentRef, navigate)}>
-          <DoneRoundedIcon/>
+        <button className="btn btn-accent btn-sm w-fit"
+                onClick={async () => await onDone(id, titleRef, contentRef, navigate)}>
+          <DoneRoundedIcon/> <p>Confirm</p>
         </button>
         <TextInput ref={titleRef} title="Title" className="w-full"></TextInput>
         <textarea ref={contentRef} className="textarea w-full h-dvh font-mono" placeholder="Your note..."></textarea>

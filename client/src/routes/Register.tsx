@@ -49,12 +49,12 @@ export function Register() {
       }
       <form className="flex w-full flex-col p-2 space-y-2 items-center" action={registerCall}>
         <EmailInput name="email" validator={true} required={true} placeholder="mario.rossi@mail.com"/>
-        <PasswordInput name="password" validator={true} required={true}/>
+        <PasswordInput name="password" validator={false} required={true}/>
         <TextInput name="displayName" title="Display name" placeholder="Mario Rossi" required={true}
                    icon={<PersonOutlineRoundedIcon/>}/>
         <TextInput name="handle" title="Handle" placeholder="mario.rossi" required={true}
                    icon={<AlternateEmailRoundedIcon/>}/>
-        <button className="btn btn-wide" type="submit">Register</button>
+        <button className="btn btn-wide btn-accent" type="submit">Register</button>
       </form>
     </>
   );

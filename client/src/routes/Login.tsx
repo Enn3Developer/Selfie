@@ -36,8 +36,8 @@ export function Login() {
       }
       <form className="flex w-full flex-col p-2 space-y-2 items-center" action={loginCall}>
         <EmailInput name="email" required={true}></EmailInput>
-        <PasswordInput name="password" required={true}></PasswordInput>
-        <button className="btn btn-wide" type="submit">Login</button>
+        <PasswordInput name="password" required={true} validator={false}></PasswordInput>
+        <button className="btn btn-wide btn-accent" type="submit">Login</button>
       </form>
     </>
   );
