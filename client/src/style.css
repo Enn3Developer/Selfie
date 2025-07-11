@@ -1924,6 +1924,9 @@
   .text-accent {
     color: var(--color-accent);
   }
+  .text-error {
+    color: var(--color-error);
+  }
   .text-primary {
     color: var(--color-primary);
   }

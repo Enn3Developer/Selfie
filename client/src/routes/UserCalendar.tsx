@@ -108,7 +108,7 @@ export default function UserCalendar() {
       return {
         title: activity._name,
         desc: activity._description,
-        start: new Date(activity._end),
+        start: new Date(activity._originalEnd ?? activity._end),
         end: new Date(activity._end),
         activityId: activity._id,
         late: activity._late,
@@ -314,7 +314,7 @@ export default function UserCalendar() {
     } else if (refActivityTab.current.checked) {
       let name = refActivityName.current.value;
       let desc = refActivityDesc.current.value;
-      let end = tupleDate.end.getTime();
+      let end = tupleDate.start.getTime();
 
       if (activityId) {
         await modifyActivity({
@@ -351,6 +351,7 @@ export default function UserCalendar() {
     await deleteEvent(eventId);
 
     setDate(tupleDate?.start ?? getNowDate());
+    setEventId(null);
     setTupleDate(null);
     document.getElementById("close_modal")?.click();
   }, [eventId]);
@@ -361,6 +362,7 @@ export default function UserCalendar() {
     await deleteActivity(activityId);
 
     setDate(tupleDate?.start ?? getNowDate());
+    setActivityId(null);
     setTupleDate(null);
     document.getElementById("close_modal")?.click();
   }, [activityId])

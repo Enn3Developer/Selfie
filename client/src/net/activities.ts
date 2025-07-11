@@ -7,6 +7,7 @@ export interface Activity {
   _description: string,
   _completed?: boolean,
   _late?: boolean,
+  _originalEnd?: number,
   _id: string,
 }
 
