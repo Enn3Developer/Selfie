@@ -3,7 +3,7 @@ import User from "../models/user.js";
 import Event from "../models/event.js";
 import Note from "../models/note.js";
 import {log, error} from "../logger.js";
-import Activity from "../models/activity";
+import Activity from "../models/activity.js";
 
 export const collections: {
   users?: mongoose.Collection,
