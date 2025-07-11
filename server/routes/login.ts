@@ -3,6 +3,7 @@ import {collections} from "../services/database.service.js";
 import User from "../models/user.js";
 import {generateToken, insertToken} from "../token.js";
 import bcrypt from "bcrypt";
+import {error, log} from "../logger.js";
 
 export const router = express.Router({mergeParams: true});
 
@@ -14,7 +15,7 @@ interface LoginParameters {
 
 router.post("/", async (req, res) => {
   let params = req.body as LoginParameters;
-  console.log("received request for login");
+  log("received request for login");
 
   try {
     let query = {_email: params.email};
@@ -27,12 +28,12 @@ router.post("/", async (req, res) => {
       }
       let token = generateToken();
       if (!insertToken(token, user._id!.toString(), params.rememberMe)) {
-        console.error("special error occurred");
+        error("special error occurred");
       }
       res.status(200).send({token: token});
     }
-  } catch (error) {
-    console.error(error);
+  } catch (e) {
+    error(e);
     res.status(404).send(`failed to find user with email: ${params.email}`);
   }
 });

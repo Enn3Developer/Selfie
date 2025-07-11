@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import User from "../models/user.js";
 import Event from "../models/event.js";
 import Note from "../models/note.js";
+import {log, error} from "../logger.js";
 
 export const collections: {
   users?: mongoose.Collection,
@@ -18,19 +19,19 @@ export async function connectToDb() {
       dbName: "Selfie"
     });
     if (!mongoose.connection.db) {
-      console.error("no connection to the database");
+      error("no connection to the database");
       return;
     }
     await mongoose.connection.db.admin().command({ping: 1});
-    console.log("Successfully connected to DB");
+    log("Successfully connected to DB");
     // @ts-ignore
     collections.users = mongoose.connection.db.collection(User.CollectionName);
     // @ts-ignore
     collections.events = mongoose.connection.db.collection(Event.CollectionName);
     // @ts-ignore
     collections.notes = mongoose.connection.db.collection(Note.CollectionName);
-  } catch (error) {
-    console.error(`error happened during database connection: ${error}`);
+  } catch (e) {
+    error(`error happened during database connection: ${e}`);
     // Ensures that the client will close when you error
     await mongoose.disconnect();
   }

@@ -3,6 +3,7 @@ import {getUserId} from "../../token.js";
 import Event from "../../models/event.js";
 import {collections} from "../../services/database.service.js";
 import {ObjectId} from "mongodb";
+import {error, log} from "../../logger.js";
 
 export const router = express.Router({mergeParams: true});
 
@@ -49,7 +50,7 @@ function increaseByOffset(date: Date, offset: string): Date {
 
 router.post("/create", async (req, res) => {
   let params = req.body as CreateEventsParam;
-  console.log(params);
+  log(params);
 
   let userId = getUserId(params.token);
   if (userId === null) {
@@ -67,9 +68,9 @@ router.post("/create", async (req, res) => {
     }
 
     res.status(200).send("OK");
-  } catch (error) {
+  } catch (e) {
     res.status(500).send("ERR");
-    console.error(error);
+    error(e);
   }
 });
 
@@ -126,9 +127,9 @@ router.post("/get", async (req, res) => {
     }
 
     res.status(200).send(sendingEvents);
-  } catch (error) {
+  } catch (e) {
     res.status(500).send("ERR");
-    console.error(error);
+    error(e);
   }
 });
 
@@ -151,9 +152,9 @@ router.post("/get/:event_id", async (req, res) => {
     }
 
     res.status(200).send(event);
-  } catch (error) {
+  } catch (e) {
     res.status(500).send("ERR");
-    console.error(error);
+    error(e);
   }
 });
 
@@ -187,9 +188,9 @@ router.post("/modify/:event_id", async (req, res) => {
     await collections.events!.replaceOne(query, event);
 
     res.status(200).send("OK");
-  } catch (error) {
+  } catch (e) {
     res.status(500).send("ERR");
-    console.error(error);
+    error(e);
   }
 });
 
@@ -211,8 +212,8 @@ router.post("/delete/:event_id", async (req, res) => {
     }
 
     res.status(200).send("OK");
-  } catch (error) {
+  } catch (e) {
     res.status(500).send("ERR");
-    console.error(error);
+    error(e);
   }
 });

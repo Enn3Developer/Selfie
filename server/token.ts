@@ -2,6 +2,10 @@ import {v4 as uuidv4} from 'uuid';
 import * as asyncFs from "node:fs/promises";
 import * as fs from "node:fs";
 import {ObjectId} from 'mongodb';
+import path from "node:path";
+import {log} from "./logger.js";
+
+const __dirname = import.meta.dirname;
 
 let tokenMap: Map<string, [start: number, hours: number, userId: string]> = new Map();
 
@@ -104,19 +108,20 @@ export function getUserId(token: string): ObjectId | null {
 
 // These ser/de functions may be temporary
 export async function serialize() {
-  // let json = JSON.stringify(Object.fromEntries(tokenMap));
-  // await asyncFs.writeFile("tokens", json, "utf-8");
+  let json = JSON.stringify(Object.fromEntries(tokenMap));
+  await asyncFs.writeFile(path.join(__dirname, "tokens"), json, "utf-8");
 }
 
 export async function deserialize() {
-  // if (!fs.existsSync("tokens")) {
-  //   return;
-  // }
-  //
-  // let content: string = await asyncFs.readFile("tokens", "utf-8");
-  // let entries = Object.entries(JSON.parse(content));
-  // for (const entry of entries) {
-  //   // @ts-ignore
-  //   insertToken(entry[0], entry[1][2], true, entry[1][0], entry[1][1]);
-  // }
+  if (!fs.existsSync(path.join(__dirname, "tokens"))) {
+    log("tokens file doesn't exist");
+    return;
+  }
+
+  let content: string = await asyncFs.readFile(path.join(__dirname, "tokens"), "utf-8");
+  let entries = Object.entries(JSON.parse(content));
+  for (const entry of entries) {
+    // @ts-ignore
+    insertToken(entry[0], entry[1][2], true, entry[1][0], entry[1][1]);
+  }
 }

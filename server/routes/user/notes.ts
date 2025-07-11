@@ -3,6 +3,7 @@ import {collections} from "../../services/database.service.js";
 import {ObjectId} from "mongodb";
 import {getUserId} from "../../token.js";
 import Note from "../../models/note.js";
+import {error, log} from "../../logger.js";
 
 export const router = express.Router({mergeParams: true});
 
@@ -35,9 +36,9 @@ router.post("/create", async (req, res) => {
     }
 
     res.status(200).send("OK");
-  } catch (error) {
+  } catch (e) {
     res.status(500).send("ERR");
-    console.error(error);
+    error(e);
   }
 });
 
@@ -66,9 +67,9 @@ router.post("/get", async (req, res) => {
     }
 
     res.status(200).send(sendingNotes);
-  } catch (error) {
+  } catch (e) {
     res.status(500).send("ERR");
-    console.error(error);
+    error(e);
   }
 });
 
@@ -91,9 +92,9 @@ router.post("/get/latest", async (req, res) => {
     }
 
     res.status(200).send(note);
-  } catch (error) {
+  } catch (e) {
     res.status(500).send("ERR");
-    console.error(error);
+    error(e);
   }
 });
 
@@ -116,9 +117,9 @@ router.post("/get/:note_id", async (req, res) => {
     }
 
     res.status(200).send(note);
-  } catch (error) {
+  } catch (e) {
     res.status(500).send("ERR");
-    console.error(error);
+    error(e);
   }
 });
 
@@ -146,9 +147,9 @@ router.post("/modify/:note_id", async (req, res) => {
     await collections.notes!.replaceOne(query, note);
 
     res.status(200).send("OK");
-  } catch (error) {
+  } catch (e) {
     res.status(500).send("ERR");
-    console.error(error);
+    error(e);
   }
 });
 
@@ -170,8 +171,8 @@ router.post("/delete/:note_id", async (req, res) => {
     }
 
     res.status(200).send("OK");
-  } catch (error) {
+  } catch (e) {
     res.status(500).send("ERR");
-    console.error(error);
+    error(e);
   }
 });

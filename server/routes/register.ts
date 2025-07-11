@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import {collections} from "../services/database.service.js";
 import User from "../models/user.js";
 import {generateToken, insertToken} from "../token.js";
+import {error, log} from "../logger.js";
 
 export const router = express.Router({mergeParams: true});
 
@@ -16,7 +17,7 @@ interface RegisterParameters {
 
 router.post("/", async (req, res) => {
   let params = req.body as RegisterParameters;
-  console.log("received request for registration");
+  log("received request for registration");
 
   try {
     let query = {_email: params.email};
@@ -38,10 +39,10 @@ router.post("/", async (req, res) => {
 
     let token = generateToken();
     if (!insertToken(token, user._id!.toString(), params.rememberMe)) {
-      console.error("special error occurred");
+      error("special error occurred");
     }
     res.status(201).send({token: token});
-  } catch (error) {
-    console.error(`error during registration: ${error}`)
+  } catch (e) {
+    error(`error during registration: ${e}`)
   }
 });
