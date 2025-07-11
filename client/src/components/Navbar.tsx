@@ -60,7 +60,7 @@ export function DesktopNavbar(props: NavbarProps) {
               return (
                 <li key={link.page}>
                   <Link to={link.url}>
-                    <p className={linkClass + (props.activePage === link.page ? "text-primary" : "")}>
+                    <p className={linkClass + (props.activePage === link.page ? "text-accent" : "")}>
                       {link.icon} {link.label}
                     </p>
                   </Link>
