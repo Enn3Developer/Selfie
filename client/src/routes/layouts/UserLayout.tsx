@@ -18,6 +18,8 @@ export default function UserLayout() {
     activePage = "calendar";
   } else if (location.pathname.includes("time_machine")) {
     activePage = "time_machine";
+  } else if (location.pathname.includes("activities")) {
+    activePage = "activities";
   }
 
   useEffect(() => {

@@ -184,11 +184,12 @@
 }
 
 .rbc-event.rbc-selected, .rbc-day-slot .rbc-selected.rbc-background-event {
-    background-color: #265985;
+    background-color: var(--color-secondary);
+    color: var(--color-secondary-content);
 }
 
 .rbc-event:focus, .rbc-day-slot .rbc-background-event:focus {
-    outline: 5px auto #3b99fc;
+    outline: 5px auto var(--color-primary);
 }
 
 .rbc-off-range {

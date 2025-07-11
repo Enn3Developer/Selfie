@@ -3,10 +3,11 @@ import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
 import ContactPageRoundedIcon from '@mui/icons-material/ContactPageRounded';
 import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import MicrowaveRoundedIcon from '@mui/icons-material/MicrowaveRounded';
+import RunningWithErrorsRoundedIcon from '@mui/icons-material/RunningWithErrorsRounded';
 import {Link} from 'react-router';
 import {ReactElement} from "react";
 
-export type Page = "home" | "notes" | "pomodoro" | "calendar" | "time_machine";
+export type Page = "home" | "notes" | "pomodoro" | "calendar" | "time_machine" | "activities";
 
 const links: { url: string, label: string, icon: ReactElement, page: Page }[] = [
   {
@@ -26,6 +27,12 @@ const links: { url: string, label: string, icon: ReactElement, page: Page }[] = 
     label: "Calendar",
     icon: <CalendarMonthRoundedIcon/>,
     page: "calendar"
+  },
+  {
+    url: "/user/activities",
+    label: "Activities",
+    icon: <RunningWithErrorsRoundedIcon/>,
+    page: "activities",
   },
   {
     url: "/user/time_machine",

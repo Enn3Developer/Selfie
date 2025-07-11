@@ -4,6 +4,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {createEvent, deleteEvent, Event, getEvents, modifyEvent} from "../net/events";
 import {TextInput} from "../components/TextInput.tsx";
 import {getNowDate} from "../utils/time_machine.ts";
+import {Activity, createActivity, deleteActivity, getActivities, modifyActivity} from "../net/activities.ts";
 
 const localizer = momentLocalizer(moment);
 type TupleDate = {
@@ -23,8 +24,10 @@ export default function UserCalendar() {
   const [view, setView] = useState<View>(defaultView);
   const [date, setDate] = useState<Date>(getNowDate());
   const [events, setEvents] = useState<Event[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [tupleDate, setTupleDate] = useState<TupleDate | null>(null);
   const [eventId, setEventId] = useState<string | null>(null);
+  const [activityId, setActivityId] = useState<string | null>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -52,12 +55,22 @@ export default function UserCalendar() {
     getEvents(start.getTime(), end.getTime()).then((events) => setEvents(events));
   }, [date, view]);
 
+  useEffect(() => {
+    getActivities().then((activities) => setActivities(activities));
+  }, [date, view]);
+
   const refName = useRef<HTMLInputElement | null>(null);
   const refDesc = useRef<HTMLInputElement | null>(null);
   const refPlace = useRef<HTMLInputElement | null>(null);
   const refFreq = useRef<HTMLSelectElement | null>(null);
   const refRep = useRef<HTMLSelectElement | null>(null);
   const refAmount = useRef<HTMLInputElement | null>(null);
+
+  const refActivityName = useRef<HTMLInputElement | null>(null);
+  const refActivityDesc = useRef<HTMLInputElement | null>(null);
+
+  const refEventTab = useRef<HTMLInputElement | null>(null);
+  const refActivityTab = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (refRep.current != null && refRep.current.value == "choose") setVisible(true);
@@ -77,7 +90,9 @@ export default function UserCalendar() {
   }, []);
 
   const calendarEvents = useMemo(() => {
-    return events.map((event) => {
+    let calendarEvents = [];
+
+    calendarEvents.push(...events.map((event) => {
       return {
         title: event._name,
         desc: event._description,
@@ -86,8 +101,21 @@ export default function UserCalendar() {
         end: new Date(event._end),
         id: event._id,
       }
-    })
-  }, [events]);
+    }));
+
+    calendarEvents.push(...activities.map((activity) => {
+      console.dir(activity);
+      return {
+        title: activity._name,
+        desc: activity._description,
+        start: new Date(activity._end),
+        end: new Date(activity._end),
+        activityId: activity._id,
+      }
+    }))
+
+    return calendarEvents;
+  }, [events, activities]);
 
   const titleAccessor = useCallback(({title, desc, place}: { title: string, desc: string, place?: string }) => {
     let content = title;
@@ -98,12 +126,19 @@ export default function UserCalendar() {
 
   const handleSelectSlot = useCallback(({start, end}: { start: Date, end: Date }) => {
     setTupleDate({start: start, end: end});
-    if (refName.current && refDesc.current && refPlace.current && refFreq.current && refRep.current) {
+    if (refName.current && refDesc.current && refPlace.current && refFreq.current && refRep.current && refEventTab.current && refActivityTab.current && refActivityName.current && refActivityDesc.current) {
       refName.current.value = "";
       refDesc.current.value = "";
       refPlace.current.value = "";
       refFreq.current.value = frequencyDefaultValue;
       refRep.current.value = repetitionDefaultValue;
+
+      refActivityName.current.value = "";
+      refActivityDesc.current.value = "";
+
+      refEventTab.current.checked = true;
+      refActivityTab.current.checked = false;
+
       setEventId(null);
       setVisible(false);
     }
@@ -113,126 +148,194 @@ export default function UserCalendar() {
     return true;
   }, []);
 
-  const handleSelectEvent = useCallback(({title, start, end, id}: {
+  const handleSelectEvent = useCallback(({title, start, end, id, activityId}: {
     title: string,
     start: Date,
     end: Date,
-    id: string
+    id?: string,
+    activityId?: string
   }) => {
-    if (!refName.current || !refDesc.current || !refPlace.current || !refFreq.current || !refRep.current || !refAmount.current) return;
+    if (!refName.current || !refDesc.current || !refPlace.current || !refFreq.current || !refRep.current || !refAmount.current
+      || !refEventTab.current || !refActivityTab.current
+      || !refActivityName.current || !refActivityDesc.current) return;
 
-    let event = events.find(event => event._id == id);
+    if (id != undefined) {
+      let event = events.find(event => event._id === id);
+      if (!event) return;
 
-    if (!event) return;
+      setEventId(event._id);
+      setActivityId(null);
+      setTupleDate({start: start, end: end});
 
-    setEventId(event._id);
-    setTupleDate({start: start, end: end});
-    refName.current.value = event._name;
-    refDesc.current.value = event._description;
-    refPlace.current.value = event._place ?? "";
-    refFreq.current.value = event._frequency != "" ? event._frequency : frequencyDefaultValue;
+      refName.current.value = event._name;
+      refDesc.current.value = event._description;
+      refPlace.current.value = event._place ?? "";
+      refFreq.current.value = event._frequency != "" ? event._frequency : frequencyDefaultValue;
 
-    switch (event._repetitions) {
-      case 0:
-        refRep.current.value = repetitionDefaultValue;
-        refAmount.current.value = "";
-        break;
-      case -1:
-        refRep.current.value = "infinite";
-        refAmount.current.value = "";
-        break;
-      case 1:
-        refRep.current.value = "1";
-        refAmount.current.value = "";
-        break;
-      case 2:
-        refRep.current.value = "2";
-        refAmount.current.value = "";
-        break;
-      case 5:
-        refRep.current.value = "5";
-        refAmount.current.value = "";
-        break;
-      default:
-        refRep.current.value = "choose";
-        refAmount.current.value = event._repetitions.toString();
-        break;
+      refEventTab.current.checked = true;
+      refActivityTab.current.checked = false;
+
+      refActivityName.current.value = "";
+      refActivityDesc.current.value = "";
+
+      switch (event._repetitions) {
+        case 0:
+          refRep.current.value = repetitionDefaultValue;
+          refAmount.current.value = "";
+          break;
+        case -1:
+          refRep.current.value = "infinite";
+          refAmount.current.value = "";
+          break;
+        case 1:
+          refRep.current.value = "1";
+          refAmount.current.value = "";
+          break;
+        case 2:
+          refRep.current.value = "2";
+          refAmount.current.value = "";
+          break;
+        case 5:
+          refRep.current.value = "5";
+          refAmount.current.value = "";
+          break;
+        default:
+          refRep.current.value = "choose";
+          refAmount.current.value = event._repetitions.toString();
+          break;
+      }
+    } else if (activityId != undefined) {
+      let activity = activities.find(activity => activity._id === activityId);
+      if (!activity) return;
+
+      setEventId(null);
+      setActivityId(activity._id);
+      setTupleDate({start: start, end: end});
+
+      refName.current.value = "";
+      refDesc.current.value = "";
+      refPlace.current.value = "";
+      refFreq.current.value = frequencyDefaultValue;
+      refRep.current.value = repetitionDefaultValue;
+      refAmount.current.value = "";
+
+      refEventTab.current.checked = false;
+      refActivityTab.current.checked = true;
+
+      refActivityName.current.value = activity._name;
+      refActivityDesc.current.value = activity._description;
     }
 
     // @ts-ignore
     document.getElementById("modal")?.showModal();
-  }, [events, tupleDate]);
+  }, [events, activities, tupleDate]);
 
   const handleClick = useCallback(async () => {
-    if (!refName.current || !refDesc.current || !refPlace.current || !refFreq.current || !refRep.current || !refAmount.current) return;
+    if (!refName.current || !refDesc.current || !refPlace.current || !refFreq.current || !refRep.current || !refAmount.current
+      || !refEventTab.current || !refActivityTab.current
+      || !refActivityName.current || !refActivityDesc.current) return;
     if (tupleDate === null) return;
 
-    let name = refName.current.value;
-    let desc = refDesc.current.value;
-    let place = refPlace.current.value.length === 0 ? undefined : refPlace.current.value;
-    let freq = refFreq.current.value;
-    let rep = refRep.current.value;
-    let amount = parseInt(refAmount.current.value);
 
-    let repeat = refFreq.current.value != frequencyDefaultValue && refRep.current.value != repetitionDefaultValue;
+    if (refEventTab.current.checked) {
+      let name = refName.current.value;
+      let desc = refDesc.current.value;
+      let place = refPlace.current.value.length === 0 ? undefined : refPlace.current.value;
+      let freq = refFreq.current.value;
+      let rep = refRep.current.value;
+      let amount = parseInt(refAmount.current.value);
 
-    let repAmount = 0;
+      let repeat = refFreq.current.value != frequencyDefaultValue && refRep.current.value != repetitionDefaultValue;
 
-    switch (rep) {
-      case "infinite":
-        repAmount = -1;
-        break;
-      case "1":
-        repAmount = 1;
-        break;
-      case "2":
-        repAmount = 2;
-        break;
-      case "5":
-        repAmount = 5;
-        break;
-      case "choose":
-        repAmount = !isNaN(amount) ? amount : 0;
+      let repAmount = 0;
+
+      switch (rep) {
+        case "infinite":
+          repAmount = -1;
+          break;
+        case "1":
+          repAmount = 1;
+          break;
+        case "2":
+          repAmount = 2;
+          break;
+        case "5":
+          repAmount = 5;
+          break;
+        case "choose":
+          repAmount = !isNaN(amount) ? amount : 0;
+      }
+
+      if (eventId) {
+        // by asking various people, most prefer to start the repetitions (if there are any) from the date the user selected to modify
+        // instead than starting from the first date of the repetitions
+        await modifyEvent({
+          _start: tupleDate.start.getTime(),
+          _end: tupleDate.end.getTime(),
+          _name: name,
+          _description: desc,
+          _place: place,
+          _id: eventId,
+          _repeat: repeat,
+          _frequency: freq,
+          _repetitions: repAmount,
+        });
+      } else {
+        await createEvent({
+          _start: tupleDate.start.getTime(),
+          _end: tupleDate.end.getTime(),
+          _name: name,
+          _description: desc,
+          _place: place,
+          _id: "",
+          _repeat: repeat,
+          _frequency: freq,
+          _repetitions: repAmount,
+        });
+      }
+
+      setDate(tupleDate.start);
+      refName.current.value = "";
+      refDesc.current.value = "";
+      refPlace.current.value = "";
+      refAmount.current.value = "";
+      refFreq.current.value = frequencyDefaultValue;
+      refRep.current.value = repetitionDefaultValue;
+      setVisible(false);
+      setEventId(null);
+      setTupleDate(null);
+    } else if (refActivityTab.current.checked) {
+      let name = refActivityName.current.value;
+      let desc = refActivityDesc.current.value;
+      let end = tupleDate.end.getTime();
+
+      if (activityId) {
+        await modifyActivity({
+          _end: end,
+          _name: name,
+          _description: desc,
+          _id: activityId,
+        });
+      } else {
+        await createActivity({
+          _end: end,
+          _name: name,
+          _description: desc,
+          _id: "",
+        });
+      }
+
+      setDate(tupleDate.start);
+      refActivityName.current.value = "";
+      refActivityDesc.current.value = "";
+      refEventTab.current.checked = true;
+      refActivityTab.current.checked = false;
+      setActivityId(null);
+      setTupleDate(null);
     }
-
-    if (eventId) {
-      // by asking various people, most prefer to start the repetitions (if there are any) from the date the user selected to modify
-      // instead than starting from the first date of the repetitions
-      await modifyEvent({
-        _start: tupleDate.start.getTime(),
-        _end: tupleDate.end.getTime(),
-        _name: name,
-        _description: desc,
-        _place: place,
-        _id: eventId,
-        _repeat: repeat,
-        _frequency: freq,
-        _repetitions: repAmount,
-      });
-    } else {
-      await createEvent({
-        _start: tupleDate.start.getTime(),
-        _end: tupleDate.end.getTime(),
-        _name: name,
-        _description: desc,
-        _place: place,
-        _id: "",
-        _repeat: repeat,
-        _frequency: freq,
-        _repetitions: repAmount,
-      });
-    }
-
-    setDate(tupleDate.start);
-    refName.current.value = "";
-    refDesc.current.value = "";
-    refPlace.current.value = "";
-    setVisible(false);
-    setEventId(null);
-    setTupleDate(null);
 
     document.getElementById("close_modal")?.click();
-  }, [eventId, events, tupleDate]);
+  }, [eventId, activityId, events, tupleDate]);
 
   const handleDelete = useCallback(async () => {
     if (eventId === null) return;
@@ -244,6 +347,16 @@ export default function UserCalendar() {
     setTupleDate(null);
     document.getElementById("close_modal")?.click();
   }, [eventId]);
+
+  const handleActivityDelete = useCallback(async () => {
+    if (activityId === null) return;
+
+    await deleteActivity(activityId);
+
+    setDate(tupleDate?.start ?? getNowDate());
+    setTupleDate(null);
+    document.getElementById("close_modal")?.click();
+  }, [activityId])
 
   return (
     <>
@@ -270,39 +383,56 @@ export default function UserCalendar() {
           <form method="dialog">
             <button id="close_modal" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
           </form>
-          <h1 className="font-bold absolute left-3 top-3">Event</h1>
-          <div className="flex flex-col p-1 pt-6 pb-10 gap-4">
-            <TextInput className="w-full" title="Name" placeholder="Event name..." ref={refName}/>
-            <TextInput className="w-full" title="Description" placeholder="Event description..." ref={refDesc}/>
-            <TextInput className="w-full" title="Place" placeholder="Event place... (optional)" ref={refPlace}/>
-            <select defaultValue={frequencyDefaultValue} className="select w-full" ref={refFreq}>
-              <option disabled={true}>{frequencyDefaultValue}</option>
-              <option value="day">Every Day</option>
-              <option value="week">Every Week</option>
-              <option value="month">Every Month</option>
-              <option value="year">Every Year</option>
-            </select>
-            <div className="flex flex-row w-full gap-2">
-              <select defaultValue={repetitionDefaultValue} className="select w-full" ref={refRep}
-                      onChange={(event) => {
-                        if (event.target.value == "choose") setVisible(true);
-                        else setVisible(false);
-                      }}>
-                <option disabled={true}>{repetitionDefaultValue}</option>
-                <option value="infinite">Indefinite repetitions</option>
-                <option value="1">1 repetitions</option>
-                <option value="2">2 repetitions</option>
-                <option value="5">5 repetitions</option>
-                <option value="choose">Choose repetitions</option>
-              </select>
-              <TextInput className={!visible ? "hidden" : ""} type="number" placeholder="Write repetitions..."
-                         ref={refAmount}/>
+          <div className="tabs tabs-border tabs-bottom">
+            <input type="radio" name="create" className="tab" aria-label="Event" ref={refEventTab} defaultChecked/>
+            <div className="tab-content">
+              <div className="flex flex-col p-1 pt-6 gap-4">
+                <TextInput className="w-full" title="Name" placeholder="Event name..." ref={refName}/>
+                <TextInput className="w-full" title="Description" placeholder="Event description..." ref={refDesc}/>
+                <TextInput className="w-full" title="Place" placeholder="Event place... (optional)" ref={refPlace}/>
+                <select defaultValue={frequencyDefaultValue} className="select w-full" ref={refFreq}>
+                  <option disabled={true}>{frequencyDefaultValue}</option>
+                  <option value="day">Every Day</option>
+                  <option value="week">Every Week</option>
+                  <option value="month">Every Month</option>
+                  <option value="year">Every Year</option>
+                </select>
+                <div className="flex flex-row w-full gap-2">
+                  <select defaultValue={repetitionDefaultValue} className="select w-full" ref={refRep}
+                          onChange={(event) => {
+                            if (event.target.value == "choose") setVisible(true);
+                            else setVisible(false);
+                          }}>
+                    <option disabled={true}>{repetitionDefaultValue}</option>
+                    <option value="infinite">Indefinite repetitions</option>
+                    <option value="1">1 repetitions</option>
+                    <option value="2">2 repetitions</option>
+                    <option value="5">5 repetitions</option>
+                    <option value="choose">Choose repetitions</option>
+                  </select>
+                  <TextInput className={!visible ? "hidden" : ""} type="number" placeholder="Write repetitions..."
+                             ref={refAmount}/>
+                </div>
+              </div>
+            </div>
+
+            <input type="radio" name="create" className={"tab " + (eventId != null ? "hidden" : "")}
+                   aria-label="Activity"
+                   ref={refActivityTab}/>
+            <div className={"tab-content " + (eventId != null ? "hidden" : "")}>
+              <div className="flex flex-col p-1 pt-6 gap-4">
+                <TextInput className="w-full" title="Name" placeholder="Activity name..." ref={refActivityName}/>
+                <TextInput className="w-full" title="Description" placeholder="Activity description..."
+                           ref={refActivityDesc}/>
+              </div>
             </div>
           </div>
           <div className="flex flex-row-reverse absolute right-2 bottom-2 gap-2">
             <input type="button" className="btn" value="Confirm" onClick={handleClick}/>
             {eventId === null ? undefined :
               <input type="button" className="btn btn-error" value="Delete" onClick={handleDelete}/>}
+            {activityId === null ? undefined :
+              <input type="button" className="btn btn-accent" value="Completed" onClick={handleActivityDelete}/>}
           </div>
         </div>
         <form method="dialog" className="modal-backdrop">
