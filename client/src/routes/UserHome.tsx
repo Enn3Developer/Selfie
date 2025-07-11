@@ -37,6 +37,11 @@ function EventsPreview() {
     <>
       <Card title="Events">
         <div className="flex flex-col gap-2 text-lg">
+          {events.length === 0 ?
+            <div>
+              No events today
+            </div>
+            : undefined}
           {
             events.map((event) => {
               return (
