@@ -15,7 +15,6 @@ import Pomodoro from "./routes/Pomodoro";
 import HomeLayout from "./routes/layouts/HomeLayout";
 import UserCalendar from "./routes/UserCalendar";
 import {TimeMachine} from "./routes/TimeMachine";
-import {UserActivities} from "./routes/UserActivities";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -32,7 +31,6 @@ root.render(
                     <Route path="pomodoro" element={<Pomodoro/>}/>
                     <Route path="calendar" element={<UserCalendar/>}/>
                     <Route path="time_machine" element={<TimeMachine/>}/>
-                    <Route path="activities" element={<UserActivities/>}/>
                     <Route path="notes" element={<UserNotes/>}/>
                     <Route path="notes/edit/:id?" element={<UserNotesEdit/>}/>
                     <Route path="notes/:id" element={<UserNote/>}/>
