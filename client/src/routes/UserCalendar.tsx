@@ -111,14 +111,21 @@ export default function UserCalendar() {
         start: new Date(activity._end),
         end: new Date(activity._end),
         activityId: activity._id,
+        late: activity._late,
       }
     }))
 
     return calendarEvents;
   }, [events, activities]);
 
-  const titleAccessor = useCallback(({title, desc, place}: { title: string, desc: string, place?: string }) => {
+  const titleAccessor = useCallback(({title, desc, place, late}: {
+    title: string,
+    desc: string,
+    place?: string,
+    late?: boolean
+  }) => {
     let content = title;
+    if (late) content += " LATE";
     if (place) content += " (" + place + ")";
     content += ": " + desc;
     return content;

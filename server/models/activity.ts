@@ -6,17 +6,19 @@ export default class Activity {
   _name: string;
   _description: string;
   _completed: boolean;
+  _late?: boolean;
   _userId: ObjectId;
   _id?: string;
 
   static CollectionName = "activity";
 
-  constructor(end: number, name: string, description: string, completed: boolean, userId: ObjectId, id?: string) {
+  constructor(end: number, name: string, description: string, completed: boolean, userId: ObjectId, late?: boolean, id?: string) {
     this._end = end;
     this._name = name;
     this._description = description;
     this._completed = completed;
     this._userId = userId;
+    this._late = late;
     this._id = id;
   }
 }

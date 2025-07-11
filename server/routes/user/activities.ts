@@ -69,7 +69,7 @@ router.post("/get", async (req, res) => {
 
       if (activity._end < params.today) {
         sendingActivities.push(new Activity(
-          params.today, activity._name, activity._description, activity._completed, userId, activity._id.toString("hex")
+          params.today, activity._name, activity._description, activity._completed, userId, true, activity._id.toString("hex")
         ));
         continue;
       }
@@ -109,7 +109,7 @@ router.post("/get/:activity_id", async (req, res) => {
 
     if (!activity._completed && activity._end < params.today) {
       res.status(200).send(new Activity(
-        params.today, activity._name, activity._description, activity._completed, userId, activity._id.toString("hex")
+        params.today, activity._name, activity._description, activity._completed, userId, true, activity._id.toString("hex")
       ));
       return;
     }

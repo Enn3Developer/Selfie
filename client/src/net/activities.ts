@@ -6,6 +6,7 @@ export interface Activity {
   _name: string,
   _description: string,
   _completed?: boolean,
+  _late?: boolean,
   _id: string,
 }
 
